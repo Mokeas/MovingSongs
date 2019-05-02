@@ -1,0 +1,88 @@
+#!/bin/bash
+echo "
+ Toto demo je ukazka jak program funguje: ukazi pro korektni vstupy
+ mam tri pomocne skripty krome hlavniho movesong
+	1. clearMusic dir - smaze vsechno
+	2. removeTestData dir- smaze testovaci soubory
+	3. createTestData dir- pripravt testovaci soubory( 4 nezvukove, a pak po trech mp3, ogg, wav) 
+ postupne ukazi funkcnost programu
+ pozn. ze vstupnich dat odstranuji mezery protoze jako unixovy uzivatel je nechci kopirovat dal do svych slozek"
+
+
+echo "
+--- prikaz ./movesongs --help , ktery nam i rekne, co presne skript dela
+"
+
+./movesongs --help
+
+echo "
+--- prikaz ./movesongs se udela na vse, takze by ted v Donwloads meli byt 4 soubory a Music hezky roztridena
+"
+./createTestData ./Downloads/
+./movesongs
+find ./Downloads/ -type f
+find ./Music/ -type f
+./clearMusic ./Music/
+./removeTestData ./Downloads/
+
+
+echo "
+--- prikaz ./movesongs -f ./cilovaSlozka/ -s ./zdrojovaSlozka/ -m  .... to by melo vypsat v cilove slozce jen mp3 hezky a pak co zbylo ve zdroji
+"
+mkdir cilovaSlozka
+mkdir zdrojovaSlozka
+./createTestData ./zdrojovaSlozka/
+./movesongs -f ./cilovaSlozka/ -s ./zdrojovaSlozka/ -m
+find ./cilovaSlozka/ -type f
+find ./zdrojovaSlozka/ -type f
+./clearMusic ./cilovaSlozka/
+./removeTestData ./zdrojovaSlozka/
+rmdir cilovaSlozka
+
+echo "
+--- prikaz ./movesongs -o -a -s ./zdrojovaSlozka/ .... jen ogg, vypis bez albumu a ze zdrojovaSlozka do Music
+"
+./createTestData ./zdrojovaSlozka/
+./movesongs -o -a -s ./zdrojovaSlozka/
+find ./Music/ -type f
+./clearMusic ./Music/
+./removeTestData ./zdrojovaSlozka/
+rmdir zdrojovaSlozka
+
+echo "
+--- prikaz ./movesongs -f ./novaSlozka/ -a ... slozka sice neexistuje, ale skript si ji vytvori
+"
+./createTestData ./Downloads/
+./movesongs -f ./novaSlozka/ -a
+find ./novaSlozka/ -type f
+./clearMusic ./novaSlozka/
+./removeTestData ./Downloads/
+rmdir novaSlozka
+
+echo "
+mohli jsme si vsimnout ze na poradi optionu opravdu nezalezi a nyni chybne vstupy
+"
+
+echo "
+--- prikaz ./movesongs -m -o .... oznami chybu jelikoz nemuzeme selektivne vybirat dva formaty zvuku  (a vyhodi help) 
+"
+./movesongs -m -o
+
+echo "
+--- prikaz ./movesongs -s neexistuje ... oznami chybe ze zdrojova slozka neexistuje
+"
+./movesongs -s neexistuje
+
+echo "
+--- prikaz ./movesongs -k -a .... oznami chybe neexistujiciho optionu
+"
+./movesongs -k -a 
+
+echo "
+--- prikaz ./movesongs -f -o ..... chybi nazev finalni slozky
+"
+./movesongs -f -o
+
+echo "
+KONEC DEMA
+"

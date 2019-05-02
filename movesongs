@@ -1,0 +1,177 @@
+#!/bin/bash
+source_dir=./Downloads/
+show_help=no
+final_dir=./Music/
+format=""
+ret_val=0
+with_albums=yes
+pattern="-.*"
+
+#tato funkce dela vlastne vsechnu praci
+#4 parametry: 1 - with album , 2 - source directory, 3 - final directory, 4 - format
+MoveTheSongs()
+{
+	#uprava souboru ve zdrojove slozce - nechceme tam mezery
+	files=$2*$4
+	for file in $files
+	do
+		newfile=`sed 's/ //g' <(echo "$file")`
+		mv -f -- "$file" "$newfile"
+	done
+
+	#samotny presun
+	files=$2*$4
+
+	if [ $1 = yes ] ; then
+		for file in $files
+		do
+			album=`sed 's=:.*==' <(sed 's=.*/==' <(echo  "$file"))`
+	        	artist=`sed 's=-.*==' <(sed 's=.*:==' <(echo  "$file"))`
+ 			songname=`sed 's=.*-==' <(echo  "$file")`
+		
+			if [ ! -d "$3$artist" ] ; then mkdir $3$artist
+			fi
+			if [ ! -d "$3$artist/$album" ] ; then mkdir $3$artist/$album 
+			fi
+		
+		mv -- "$file" "$3$artist/$album/$songname"
+		done
+	else
+		for file in $files
+                do
+                        artist=`sed 's=-.*==' <(sed 's=.*:==' <(echo  "$file"))`
+                        songname=`sed 's=.*-==' <(echo  "$file")`
+
+                        if [ ! -d "$3$artist" ] ; then mkdir $3$artist
+                        fi
+                        
+                	mv -- "$file" "$3$artist/$songname"
+                done
+
+	fi;
+	
+}
+#napoveda
+ShowHelp()
+{
+	echo "
+	Skript movesongs presune vsechny zvukove soubory (.wav, .ogg, .mp3 ) ze slozky do jine:
+	Defaultne skript pracuje v aktualnim adresari, ve kterem je slozka Downloads a z te se presunou vsechny zvukove soubory do slozky Music, ktera je ve stejne slozce
+	jako tento skript. Zvukove souory musi byt ve formatu: 'Album:Autor-NazevPisnicky.ZvukovyFormat'. Skript takto strukturovana data roztridi do hierchie:
+	CilovaSlozka/Autor/Album/NazevPisnicky.ZvukovyFormat.
+	Optiony: V libovolnem poradi
+	-a	Zmeni hierchii na CilovaSlozka/Autor/NazevPisnicky.ZvukovyFormat (nebere v potaz album}
+	-s	Zmeni slozku z defaultniho Downloads na lib. slozku odkud chceme brat soubory: -s DirName
+	-f	Zmeni slozku z defaultniho Music na lib. slozku, kam vysledek chceme ukladat: -f DirName
+	-m	Selektivne vybiram pouze format .mp3(*)
+	
+	-w	Selektivne vybiram pouze format .wav(*)
+	
+	-o	Selektivne vybiram pouze format .ogg(*)
+		
+	--help 	napoveda
+	pozn. (*) selektivne mohu vybirat POUZE JEDEN format
+		./movesongs -m -o ........ invalidni vstup
+		./movesongs -m ........... validni vstup
+		";
+
+}
+#nacitani vsech optionu 
+while [ -n "$1" ]; do
+	case "$1" in
+	--help)
+		show_help=yes
+		break
+		;;
+	-s)	shift
+		if [ -n "$1" ] ; then
+			if [ -d "$1" ] ; then
+				source_dir=$1
+			elif [[ "$1" =~ $pattern ]]; then
+				echo "chybi nazev zdrojove slozky"  >&2
+				ret_val=2
+			else
+				echo "zdrojova slozka neexistuje" >&2
+				ret_val=2
+			fi
+		else
+			echo "chybi nazev zdrojove slozky" >&2
+			ret_val=2
+			break
+		fi
+		;;
+
+	-f)	shift
+		if [ -n "$1" ] ; then
+			if [[ "$1" =~ $pattern ]]; then
+				echo "chybi nazev zdrojove slozky" >&2
+				ret_val=2
+			else
+				final_dir=$1
+			fi
+		else
+			echo "chybi nazev finalni slozky" >&2
+			ret_val=2
+			break
+		fi
+		;;
+
+	-a)
+		with_albums=no
+		;;
+
+	-m)	if [ -n "$format" ] ; then
+			echo "bylo zadano vice formatu" >&2
+			ret_val=3
+			break
+		fi
+		
+		format=.mp3
+		;;
+
+	-o)     if [ -n "$format" ] ; then
+                        echo "bylo zadano vice formatu" >&2
+                        ret_val=1
+                        break
+                fi
+
+                format=.ogg
+                ;;
+
+        -w)     if [ -n "$format" ] ; then
+                        echo "bylo zadano vice formatu" >&2
+                        ret_val=1
+                        break
+                fi
+
+                format=.wav
+                ;;
+
+	*) 	echo "nespravny option"
+		ret_val=4
+		break
+		;;
+
+	esac
+	shift
+done	
+
+#vyhodnoceni helpove hlasky
+if [[ $show_help = yes || $ret_val -gt 0 ]]; then
+	ShowHelp
+	exit $ret_val
+fi
+
+#finalni slozka se musi vytvorit, pokud neexistuje
+if [ ! -d "$final_dir" ] ; then
+	mkdir $final_dir
+fi
+
+#samotne rozdeleni, ktere funkce vyuziji
+if [ -z "$format" ] ; then
+        MoveTheSongs $with_albums $source_dir $final_dir .mp3
+        MoveTheSongs $with_albums $source_dir $final_dir .ogg
+	MoveTheSongs $with_albums $source_dir $final_dir .wav
+else
+	MoveTheSongs $with_albums $source_dir $final_dir $format
+fi
