@@ -1,49 +1,34 @@
-Zapoctovy Program UNIX
-Dan Raffl, IOI, 2. rocnik 
-LS 2019 
-Uvod do Unixu
+Movesongs
 
-Popis:
+Skript pracuje v adresari, ve kterem je slozka
+Downloads a z te se presunou vsechny zvukove soubory do slozky Music,
+ktera je ve stejne slozce jako tento skript. Zvukove souory musi byt ve
+formatu: 'Album:Autor-NazevPisnicky.ZvukovyFormat'. Skript takto
+strukturovana data roztridi do hierchie:
+CilovaSlozka/Autor/Album/NazevPisnicky.ZvukovyFormat.
+Pro vice optionu pouzijte -help.
 
-Zapoctovy program se sklada z:
-	- movesongs ... hlavni skript
-	- demo ... ukazka jak movesongs.sh pracuje
-	- pomocne skripty na mazani a tvoreni dat
-		- createTestData, removeTestData, clearMusic
+Example:
 
-Movesongs - help:
+Downloads:
+"54 Dole Hlavou:Horkyze Slize-Silny Refren.mp3" 
+"Corrida: Kabat-Kostlivci.ogg"
+"adfafaffaf.dfs"
+"tosemnepatri.csv"
+"Hybrid Theory:Linkin Park-In The End.mp3"
+"Hybrid Theory:Linkin Park-Forgotten.mp3"
+"Meteora: Linkin Park-Breaking The Habit.mp3"
 
-	Skript movesongs presune vsechny zvukove soubory (.wav, .ogg, .mp3 ) ze slozky
-	o jine:
+./movesongs -m 			(-m = selektive vybiram .mp3)
 
-	Defaultne skript pracuje v aktualnim adresari, ve kterem je slozka
-	Downloads a z te se presunou vsechny zvukove soubory do slozky Music,
-	ktera je ve stejne slozce jako tento skript. Zvukove souory musi byt ve
-	formatu: 'Album:Autor-NazevPisnicky.ZvukovyFormat'. Skript takto
-	strukturovana data roztridi do hierchie:
-
-	CilovaSlozka/Autor/Album/NazevPisnicky.ZvukovyFormat.  
-
-	Optiony: (v libovolnem poradi) 
-	
-	-a      Zmeni hierchii na CilovaSlozka/Autor/NazevPisnicky.ZvukovyFormat (nebere v potaz album} 
-
-	-s	Zmeni slozku z defaultniho Downloads na lib. slozku odkud chceme brat soubory: -s DirName 
-
-	-f      Zmeni slozku z defaultniho Music na lib. slozku, kam vysledek chceme ukladat: -f DirName -m
-		Selektivne vybiram pouze format .mp3(*)
-
-	-w      Selektivne vybiram pouze format .wav(*)
-
-	-o      Selektivne vybiram pouze format .ogg(*)
-
-	--help  napoveda pozn. (*) selektivne mohu vybirat POUZE JEDEN format
-		./movesongs -m -o ........ invalidni vstup 
-		./movesongs -m ........... validni vstup
-
-
-Demo:
-
-Pred spustenim dema je potreba inicializovat v aktualnim adresari adresar Music a Downloads, tedy provest prikazy:
-mkdir Music
-mkdir Downloads
+Music:
+Horkyze Slize
+	54 Dole Hlavou
+		Silny Refren.mp3
+		
+Linkin Park
+	Meteora
+		Breaking The Habit.mp3
+	Hybrid Theory
+		In The End.mp3
+		Forgotten.mp3
