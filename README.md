@@ -11,7 +11,7 @@ Pro vice optionu pouzijte -help.
 Example:
 
 Downloads:
-"54 Dole Hlavou:Horkyze Slize-Silny Refren.mp3" 
+"54 Dole Hlavou:Horkyze Slize-Silny Refren.mp3"
 "Corrida: Kabat-Kostlivci.ogg"
 "adfafaffaf.dfs"
 "tosemnepatri.csv"
